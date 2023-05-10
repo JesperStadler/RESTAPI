@@ -46,7 +46,6 @@ function hash(data) {
   return hash.digest("hex");
 }
 
-//Kolla om man skriver app, jag skrev på annat sätt
 app.post("/users", (req, res, next) => {
   if (req.body.username && req.body.username && req.body.name) {
     let sql = `SELECT * from movies  WHERE username = "${req.body.username}"`;
