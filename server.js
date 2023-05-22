@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
 const mysql = require("mysql");
 
 var con = mysql.createConnection({
@@ -30,15 +31,7 @@ app.get("/movies/:id", (req, res) => {
 });
 
 const crypto = require("crypto");
-
-function hash(data) {
-  const hash = crypto.createHash("sha256");
-  hash.update(data);
-  return hash.digest("hex");
-}
-//POST /users
-
-const crypto = require("crypto"); //använder NodeJS inbyggda krypteringsfunktioner.
+const { Console } = require("console");
 
 function hash(data) {
   const hash = crypto.createHash("sha256");
@@ -46,53 +39,42 @@ function hash(data) {
   return hash.digest("hex");
 }
 
-app.post("/users", (req, res, next) => {
-  if (req.body.username && req.body.username && req.body.name) {
-    let sql = `SELECT * from movies  WHERE username = "${req.body.username}"`;
-    connection.query(sql, function (err, result) {
+app.post("/movies", (req, res, next) => {
+  console.log("movies");
+  if (req.body.titel && req.body.director && req.body.year) {
+    let sql = `SELECT * from movies  WHERE Titel = "${req.body.titel}"`;
+    con.query(sql, function (err, result) {
       if (err) throw err;
       if (result.length === 0) {
-        let passwordHash = hash(req.body.password);
-        let sql = `INSERT INTO users (name, password, username) VALUES ("${req.body.name}", "${passwordHash}", "${req.body.username}")`; // Skapar en användare med datan som skickas in
+        let sql = `INSERT INTO movies (titel, director, year) VALUES ("${req.body.titel}", "${req.body.director}", "${req.body.year}")`; // Skapar en användare med datan som skickas in
 
-        connection.query(sql, function (err, result, fields) {
-          const createdUser = result.insertId;
+        con.query(sql, function (err, result, fields) {
+          const createdMovies = result.insertId;
           if (err) throw err;
           res.status(201).json({
-            updatedId: createdUser,
+            updatedId: createdMovies,
           });
         });
       } else {
         res.status(400).json({
-          message: "Username already taken.",
+          message: "Movie already taken.",
         });
       }
     });
   }
 });
 
-app.post("/login", function (req, res) {
-  //kod här för att hantera anrop…
-  let sql = `SELECT * FROM users WHERE username='${req.body.username}'`;
-  const html = `
-  
-    <html>
-    <body>
-      <h1>API routes:</h1>
-      <ul>
-        ${routes.map((r) => `<li>${r.path}: ${r.description}</li>`).join("")}
-      </ul>
-    </body>
-  </html>
-  
-`;
-  res.send(html);
+// <html>
+//   <body>
+//     // <h1>API routes:</h1>
+//     <ul>
+//       // ${routes.map((r) => `<li>${r.path}: ${r.description}</li>`).join("")}
+//     </ul>
+//   </body>
+// </html>;
 
-  con.query(sql, function (err, result, fields) {
-    if (err) throw err;
-    //kod här för att hantera returnera data…
-  });
-});
+//res.send(html);
+
 // Route för att hämta dokumentationen
 app.get("/", (req, res) => {
   const documentation = `
